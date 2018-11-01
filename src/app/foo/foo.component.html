@@ -1,0 +1,10 @@
+<p>
+  foo works! And here is the clickable data:
+</p>
+
+<ul>
+<li *ngFor="let data of GetData()">
+  <a routerLink="/example_with_id/{{GetId(data)}}">{{data.text}}</a>
+</li>
+</ul>
+
