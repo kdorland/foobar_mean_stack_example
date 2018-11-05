@@ -28,8 +28,9 @@ function getData(query) {
       (documents) => {
         console.log("Got data");
         resolve(documents);
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.error(error));
   });
+
 }
 
 function insertData(text, details) {
@@ -39,7 +40,7 @@ function insertData(text, details) {
       (result) => {
         console.log("Inserted data");
         resolve(result.insertedId);
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.error(error));
   });
 }
 
@@ -50,7 +51,7 @@ function countData(query) {
       (count) => {
         console.log("Counted data");
         resolve(count);
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.error(error));
   });
 }
 
@@ -59,7 +60,7 @@ function removeData(query) {
     client.db(dbName).collection("data").remove(query).then(
       (documents) => {
         console.log("Removed data");
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.error(error));
   });
 }
 
@@ -77,7 +78,7 @@ function generateTestData(count) {
     data.insertMany(insertData).then((result) => {
       console.log(`Generated ${count} pieces of data`);
       resolve(result);
-    }).catch((error) => console.log(error));
+    }).catch((error) => console.error(error));
   });
 }
 
