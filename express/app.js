@@ -6,6 +6,7 @@ const morgan = require('morgan');
 
 /**** App modules ****/
 const db = require('./db');
+const ObjectID = require('mongodb').ObjectID;
 
 /**** Configuration ****/
 const appName = "Foobar";
@@ -30,12 +31,16 @@ app.get('/api/my_data', (req, res) => db.getData({}).then(
   (data) => res.json(data)
 ));
 
+app.get('/api/my_data/:id', (req, res) =>
+  db.getData({_id : ObjectID(req.params.id)}).then((data) => res.json(data)
+));
+
 app.post('/api/my_data', (req, res) => {
-    let text = req.body.text;
-    let details = req.body.details;
-    db.insertData(text, details).then((newId) => {
-      res.json({id : newId});
-    });
+  let text = req.body.text;
+  let details = req.body.details;
+  db.insertData(text, details).then((newId) => {
+    res.json({id : newId});
+  });
 });
 
 /**** Reroute all unknown requests to angular index.html ****/
