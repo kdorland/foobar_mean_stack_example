@@ -7,6 +7,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from './app-routing.module';
 import { FooComponent } from './foo/foo.component';
 import { BarComponent } from './bar/bar.component';
+import { LoginComponent } from './login/login.component';
 
 
 
@@ -15,7 +16,8 @@ import { BarComponent } from './bar/bar.component';
   declarations: [
     AppComponent,
     FooComponent,
-    BarComponent
+    BarComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

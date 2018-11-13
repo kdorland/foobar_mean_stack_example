@@ -1,3 +1,11 @@
+<p *ngIf="auth.IsLoggedIn(); else elseNotLoggedIn">
+  <button (click)="Logout()">Logout</button>
+</p>
+<ng-template #elseNotLoggedIn>
+  <br/>
+  <a routerLink="/login/">Go to login page</a>.
+</ng-template>
+
 <p>
   foo works! And here is the clickable data:
 </p>

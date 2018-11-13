@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from "../data.service";
+import { AuthService } from "../auth.service";
 
 @Component({
   selector: 'app-foo',
@@ -9,7 +10,8 @@ import { DataService } from "../data.service";
 export class FooComponent implements OnInit {
 
   constructor(
-    private service : DataService
+    private service : DataService,
+    private auth : AuthService
   ) { }
 
   ngOnInit() {
@@ -22,6 +24,11 @@ export class FooComponent implements OnInit {
   GetId(data) : number {
     if (data) return data._id;
     else return -1;
+  }
+
+  Logout() {
+    this.service.StopPoller();
+    this.auth.Logout();
   }
 
 }

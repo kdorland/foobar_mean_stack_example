@@ -3,6 +3,9 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const checkJwt = require('express-jwt');
 
 /**** App modules ****/
 const db = require('./db');
@@ -21,9 +24,41 @@ app.use(express.static('../dist/mandatory_exercise'));
 // Read more here: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "Authorization, Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-    next();
+
+    // intercepts OPTIONS method
+    if ('OPTIONS' === req.method) {
+      // respond with 200
+      console.log("Allowing OPTIONS");
+      res.send(200);
+    }
+    else {
+      // move on
+      next();
+    }
+});
+
+// Check JWT
+app.use(
+  checkJwt({ secret: process.env.JWT_SECRET })
+    .unless({ path : ['/api/authenticate', '/api/authenticate/']})
+);
+
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).json({ error: err.message });
+  }
+});
+
+/**** Mock User Data ****/
+let users = [
+  { name : "kristian", hash : "" }
+];
+
+bcrypt.hash("password123", 10, function(err, hash) {
+  users[0].hash = hash;
+  console.log("Mock hash generated");
 });
 
 /**** Routes ****/
@@ -42,6 +77,36 @@ app.post('/api/my_data', (req, res) => {
     res.json({id : newId});
   });
 });
+
+app.post('/api/authenticate', (req, res) => {
+  console.log("auth!!");
+  const username = req.body.username;
+  const password = req.body.password;
+  console.log(username + ", " + password);
+
+  const user = users.find((user) => user.name === username);
+  if (user) {
+    bcrypt.compare(password, user.hash, (err, result) => {
+      if (result) {
+
+        const payload = {
+          username: username,
+          admin: false
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.json({
+          message: 'User authenticated succesfully',
+          token: token
+        });
+      }
+      else res.status(401).json({message: "Password mismatch!"})
+    });
+  } else {
+    res.status(404).json({message: "User not found!"});
+  }
+});
+
 
 /**** Reroute all unknown requests to angular index.html ****/
 app.get('/*', (req, res, next) => {
